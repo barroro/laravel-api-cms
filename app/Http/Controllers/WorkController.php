@@ -16,7 +16,7 @@ class WorkController extends Controller
      */
     public function index()
     {
-        return Work::with('sections')->with('category')->with('images')->get();
+        return Work::all();
     }
 
     /**
@@ -75,7 +75,7 @@ class WorkController extends Controller
      */
     public function show($id)
     {
-        return Work::where('id', $id)->get();
+        return Work::where('id', $id)->with('sections')->with('category')->with('images')->first();
     }
 
     /**

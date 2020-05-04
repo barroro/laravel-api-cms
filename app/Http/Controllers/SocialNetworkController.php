@@ -55,14 +55,11 @@ class SocialNetworkController extends Controller
         $socialNetwork->icon = $request->icon;
         $socialNetwork->title = $request->title;
         $socialNetwork->color = $request->color;
-        $socialNetwork->image = $request->url;
+        $socialNetwork->url = $request->url;
         $socialNetwork->save();
 
         //Return success response if validate doens't have errors
-        return response()->json(([
-            'socialNetworkCreated' => $socialNetwork,
-            'message' => 'Social network created succesfully'
-        ]), 200);
+        return response()->json($socialNetwork, 200);
     }
 
     /**
@@ -109,11 +106,11 @@ class SocialNetworkController extends Controller
         }
 
         //Create new work object to added in BD
-        $socialNetwork = new SocialNetwork();
+        $socialNetwork = SocialNetwork::find($id);
         $socialNetwork->icon = $request->icon;
         $socialNetwork->title = $request->title;
         $socialNetwork->color = $request->color;
-        $socialNetwork->image = $request->url;
+        $socialNetwork->url = $request->url;
         $socialNetwork->update();
 
         //Return success response if validate doens't have errors

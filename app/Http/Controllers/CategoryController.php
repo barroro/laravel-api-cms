@@ -43,7 +43,7 @@ class CategoryController extends Controller
         $category->save();
 
         //Return success response if validate doens't have errors
-        return response()->json((['categoryCreated' => $category]), 200);
+        return response()->json($category, 200);
     }
 
     /**
@@ -83,7 +83,7 @@ class CategoryController extends Controller
         $category->save();
 
         //Return success response if validate doens't have errors
-        return response()->json((['categoryUpdated' => $category]), 200);
+        return response()->json($category, 200);
     }
 
     /**

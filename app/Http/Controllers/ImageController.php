@@ -40,6 +40,9 @@ class ImageController extends Controller
         //Check if has file
         if ($request->hasFile('image')) {
 
+            // foreach($request->file('image') as $file){
+
+            // }
             //Save in storage/app/images
             $path = Storage::putFile('images', $request->file('image'));
 
@@ -50,7 +53,7 @@ class ImageController extends Controller
             $image->save();
 
             //Return message and image created
-            return response()->json((['message' => 'Image uploaded', 'Image' => $image]), 200);
+            return response()->json((['message' => 'Image uploaded', 'image' => $image]), 200);
         }
     }
 
@@ -96,6 +99,9 @@ class ImageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $image = Image::find($id);
+        Storage::delete($image->path);
+        $image->delete();
+        return response()->json((['message' => 'Delete image successfully']), 200);
     }
 }
