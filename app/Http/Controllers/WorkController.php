@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Work;
+use App\WorkImage;
+use App\WorkSection;
+use App\WorkSectionImages;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class WorkController extends Controller
@@ -16,7 +20,12 @@ class WorkController extends Controller
      */
     public function index()
     {
-        return Work::all();
+        return Work::with('category')->get();
+    }
+
+    public function getActiveWorks()
+    {
+        return Work::with('category')->with('images')->where('active', true)->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -53,15 +62,33 @@ class WorkController extends Controller
         $work->title = $request->title;
         $work->subtitle = $request->subtitle;
         $work->content = $request->content;
+        $work->category_id = $request->category;
+        $work->save();
 
         //Upload file and get path
-        if ($request->hasFile('photo')) {
-            $fileName = date("Y-m-d") . "-" . $request->file('photo')->getClientOriginalName();
-            $request->file('photo')->move(public_path("uploads"), $fileName);
-            $work->image = 'uploads/' . $fileName;
+        // if ($request->hasFile('photo')) {
+        //     $fileName = date("Y-m-d") . "-" . $request->file('photo')->getClientOriginalName();
+        //     $request->file('photo')->move(public_path("uploads"), $fileName);
+        //     $work->image = 'uploads/' . $fileName;
+        // }
+
+        //Added new list of images
+        foreach ($request->workImages as $image) {
+            $workImage = new WorkImage();
+            $workImage->image_id = $image['id'];
+            $workImage->work_id = $work->id;
+            $workImage->save();
         }
 
-        $work->save();
+        //Added new list of images
+        foreach ($request->sections as $section) {
+            $workSection = new WorkSection();
+            $workSection->title = $section['title'];
+            $workSection->subtitle = $section['subtitle'];
+            $workSection->content = $section['content'];
+            $workSection->work_id = $work->id;
+            $workSection->save();
+        }
 
         //Return success response if validate doens't have errors
         return response()->json((['workCreated' => $work]), 200);
@@ -114,7 +141,51 @@ class WorkController extends Controller
         $work->title = $request->title;
         $work->subtitle = $request->subtitle;
         $work->content = $request->content;
-        $work->save();
+        $work->active = $request->active;
+        $work->category_id = $request->category;
+        $work->update();
+
+        //Delete all work images wors by work id
+        WorkImage::where('work_id', $work->id)->delete();
+
+        //Added new list of images
+        foreach ($request->workImages as $image) {
+            $workImage = new WorkImage();
+            $workImage->image_id = $image['id'];
+            $workImage->work_id = $work->id;
+            $workImage->save();
+            //Log::debug($image['id']);
+        }
+
+        //Remove work section images
+        $workSections = WorkSection::where('work_id', $work->id)->get();
+        foreach ($workSections as $workSection) {
+            WorkSectionImages::where('work_section_id', $workSection->id)->delete();
+        }
+
+        //Delete all work sections
+        WorkSection::where('work_id', $work->id)->delete();
+
+        //Added new list of images
+        foreach ($request->sections as $section) {
+
+            $workSection = new WorkSection();
+            $workSection->title = $section['title'];
+            $workSection->subtitle = $section['subtitle'];
+            $workSection->content = $section['content'];
+            $workSection->work_id = $work->id;
+            $workSection->view_type = $section['view_type'];
+            $workSection->save();
+
+            if ($section['images']) {
+                foreach ($section['images'] as $sectionImage) {
+                    $workSectionImage = new WorkSectionImages();
+                    $workSectionImage->work_section_id = $workSection->id;
+                    $workSectionImage->image_id = $sectionImage['id'];
+                    $workSectionImage->save();
+                }
+            }
+        }
 
         //Return success response if validate doens't have errors
         return response()->json((['workUpdated' => $work]), 200);

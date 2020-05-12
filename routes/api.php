@@ -68,6 +68,7 @@ Route::group([
     Route::middleware('auth:api')->put('/{id}', 'WorkController@update');
     Route::middleware('auth:api')->delete('/{id}', 'WorkController@delete');
     Route::middleware('auth:api')->get('/', 'WorkController@index');
+    Route::get('/getActiveWorks', 'WorkController@getActiveWorks');
     Route::get('/{id}', 'WorkController@show');
 });
 

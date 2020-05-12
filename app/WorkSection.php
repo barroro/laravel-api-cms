@@ -17,4 +17,9 @@ class WorkSection extends Model
     {
         return $this->belongsTo('App\Work', 'work_id');
     }
+
+    public function images()
+    {
+        return $this->belongsToMany('App\Image', 'work_section_images');
+    }
 }

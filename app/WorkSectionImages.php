@@ -4,12 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class WorkImage extends Model
+class WorkSectionImages extends Model
 {
-    protected $table = 'work_images';
+    protected $table = 'work_section_images';
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'work_id', 'image_id'
+        'work_section_id', 'image_id'
     ];
 }

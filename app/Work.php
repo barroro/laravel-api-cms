@@ -15,7 +15,7 @@ class Work extends Model
 
     public function sections()
     {
-        return $this->hasMany('App\WorkSection');
+        return $this->hasMany('App\WorkSection')->with('images');
     }
 
     public function category()
