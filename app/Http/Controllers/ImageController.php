@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Image;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
@@ -40,20 +41,24 @@ class ImageController extends Controller
         //Check if has file
         if ($request->hasFile('image')) {
 
-            // foreach($request->file('image') as $file){
+            $files = $request->file('image');
+            $images = [];
 
-            // }
-            //Save in storage/app/images
-            $path = Storage::putFile('images', $request->file('image'));
+            foreach ($files as $file) {
+                //Save in storage/app/images
+                $path = Storage::putFile('images', $file);
 
-            //Create image with path
-            $image = new Image();
-            $image->name = $request->file('image')->getClientOriginalName();
-            $image->path = $path;
-            $image->save();
+                //Create image with path
+                $image = new Image();
+                $image->name = $file->getClientOriginalName();
+                $image->path = $path;
+                $image->save();
+
+                array_push($images, $image);
+            }
 
             //Return message and image created
-            return response()->json((['message' => 'Image uploaded', 'image' => $image]), 200);
+            return response()->json((['message' => 'Image uploaded', 'images' => $images]), 200);
         }
     }
 

@@ -43,6 +43,7 @@ class MessageController extends Controller
         $message->email = $request->email;
         $message->subject = $request->subject;
         $message->body = $request->body;
+        $message->status = 0;
         $message->save();
 
         //Return success response if validate doens't have errors
@@ -74,6 +75,22 @@ class MessageController extends Controller
         $message->email = $request->email;
         $message->subject = $request->subject;
         $message->body = $request->body;
+        $message->save();
+
+        //Return success response if validate doens't have errors
+        return response()->json((['messageUpdated' => $message]), 200);
+    }
+
+    /**
+     * Update status of message.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateToViewed($id)
+    {
+        $message = Message::find($id);
+        $message->status = 1;
         $message->save();
 
         //Return success response if validate doens't have errors

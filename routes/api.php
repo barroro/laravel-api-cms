@@ -23,7 +23,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::resource('images', 'ImageController');
-Route::resource('categories', 'CategoryController');
+// Route::resource('categories', 'CategoryController');
 Route::resource('workSections', 'WorkSectionController');
 Route::resource('socialNetworks', 'SocialNetworkController');
 Route::resource('messages', 'MessageController');
@@ -70,6 +70,16 @@ Route::group([
     Route::middleware('auth:api')->get('/', 'WorkController@index');
     Route::get('/getActiveWorks', 'WorkController@getActiveWorks');
     Route::get('/{id}', 'WorkController@show');
+});
+
+Route::group([
+    'prefix' => 'categories',
+], function () {
+    Route::middleware('auth:api')->post('/', 'CategoryController@store');
+    Route::middleware('auth:api')->put('/{id}', 'CategoryController@update');
+    Route::middleware('auth:api')->delete('/{id}', 'CategoryController@delete');
+    Route::get('/', 'CategoryController@index');
+    Route::get('/{id}', 'CategoryController@show');
 });
 
 Route::group([
